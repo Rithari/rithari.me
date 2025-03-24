@@ -400,8 +400,7 @@ async function fetchItems() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            credentials: 'include' // This is needed for CORS with credentials
+            }
         });
         
         if (!response.ok) {
