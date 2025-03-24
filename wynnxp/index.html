@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1e1e1e; 
+            color: #ffffff; 
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #55FFFF;
+            margin-bottom: 5px;
+        }
+        .header .subtitle {
+            color: #888;
+            font-style: italic;
+        }
+        .timestamp {
+            color: #888;
+            text-align: right;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .info-box {
+            background-color: #2d2d2d;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #FF5555;
+            line-height: 1.6;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(255, 85, 85, 0.1);
+        }
+        .info-box h3 {
+            color: #FF5555;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            letter-spacing: 0.5px;
+        }
+        .info-box p {
+            color: #DDD;
+            margin-bottom: 15px;
+        }
+        .info-box ul {
+            margin: 15px 0 5px 0;
+            padding-left: 25px;
+            color: #DDD;
+        }
+        .info-box li {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .info-box li::before {
+            content: "•";
+            color: #FF5555;
+            font-weight: bold;
+            position: absolute;
+            left: -15px;
+        }
+        .button-container {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .theme-button {
+            background-color: #2d2d2d;
+            color: #55FFFF;
+            border: 2px solid #55FFFF;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+        .theme-button:hover {
+            background-color: #55FFFF;
+            color: #1e1e1e;
+        }
+        .theme-button:active {
+            transform: scale(0.98);
+        }
+        .summary {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: #55FF55;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .summary-item {
+            background-color: #363636;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        .category { 
+            margin-top: 20px; 
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+        }
+        .category h2 {
+            color: #55FFFF;
+            cursor: pointer;
+            user-select: none;
+        }
+        .category h2::before {
+            content: '▼';
+            display: inline-block;
+            margin-right: 10px;
+            transition: transform 0.2s;
+        }
+        .category.collapsed h2::before {
+            transform: rotate(-90deg);
+        }
+        .category.collapsed .items-grid {
+            display: none;
+        }
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            align-items: start;
+        }
+        .item {
+            background-color: #2d2d2d;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .item:hover {
+            background-color: #363636;
+        }
+        .item > *:first-child {
+            white-space: nowrap;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .item-info {
+            display: block;
+            margin-bottom: 3px;
+        }
+        .item-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #444;
+            width: 100%;
+        }
+        .item-details.expanded {
+            display: block;
+        }
+        .stat-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #363636;
+            border-radius: 4px;
+        }
+        .section-title {
+            color: #55FFFF;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        .stat {
+            color: #DDD;
+            margin: 5px 0;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stat-name {
+            min-width: 120px;
+            color: #888;
+        }
+        .stat-value {
+            color: inherit;
+        }
+        .lore-text {
+            color: #DDD;
+            font-style: italic;
+            line-height: 1.4;
+            padding: 5px 0;
+        }
+        .positive {
+            color: #55FF55;
+        }
+        .negative {
+            color: #FF5555;
+        }
+        .neutral {
+            color: #FFFFFF;
+        }
+        .drop-info {
+            color: #888;
+            margin-left: 20px;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .tradeable {
+            color: #55FF55;
+        }
+        .not-tradeable {
+            color: #FF5555;
+        }
+        .set-tag {
+            color: #55FF55;
+        }
+        .level {
+            color: #888;
+        }
+        .xp-bonus {
+            color: #FFFF55;
+        }
+    </style>
+    <script>
+        function toggleCategory(element) {
+            const category = element.closest('.category');
+            category.classList.toggle('collapsed');
+        }
+        
+        function toggleItem(elementId) {
+            const element = document.getElementById(elementId);
+            const details = element.querySelector('.item-details');
+            details.classList.toggle('expanded');
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>Wynncraft XP Bonus Items</h1>
+        <div class="subtitle">Created by Rithari</div>
+    </div>
+    
+    <div class="timestamp">
+        Last Fetched: <span id="timestamp"></span>
+    </div>
+    
+    <div class="info-box">
+        <h3>⚠️ Important Information</h3>
+        <p>This is a curated list of Wynncraft items that provide XP bonuses. The list is designed to help you find the best items for leveling:</p>
+        <ul>
+            <li>Only the <strong>most efficient</strong> items are shown - if a higher-level item gives less XP than a lower-level one in the same category, it's not included.</li>
+            <li>All items are organized by category (helmet, weapon, etc.) and sorted by level requirement.</li>
+            <li>Items marked in <span style="color: #55FF55">green</span> are tradeable, while items in <span style="color: #FF5555">red</span> cannot be traded. For non-tradeable items, their source location is shown.</li>        </ul>
+    </div>
+    
+    <div class="summary">
+        <h2>Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item"><strong>Total Items:</strong> <span id="total-items">Loading...</span></div>
+            <div class="summary-item"><strong>Helmet</strong><br>Items: <span id="helmet-count">Loading...</span><br>Tradeable: <span id="helmet-tradeable">Loading...</span><br>Max XP: <span id="helmet-max-xp">Loading...</span></div>
+            <div class="summary-item"><strong>Chestplate</strong><br>Items: <span id="chestplate-count">Loading...</span><br>Tradeable: <span id="chestplate-tradeable">Loading...</span><br>Max XP: <span id="chestplate-max-xp">Loading...</span></div>
+            <div class="summary-item"><strong>Leggings</strong><br>Items: <span id="leggings-count">Loading...</span><br>Tradeable: <span id="leggings-tradeable">Loading...</span><br>Max XP: <span id="leggings-max-xp">Loading...</span></div>
+            <div class="summary-item"><strong>Boots</strong><br>Items: <span id="boots-count">Loading...</span><br>Tradeable: <span id="boots-tradeable">Loading...</span><br>Max XP: <span id="boots-max-xp">Loading...</span></div>
+        </div>
+    </div>
+
+    <div id="items">
+        <div class="category">
+            <h2 onclick="toggleCategory(this)">Helmet</h2>
+            <div class="items-grid">
+                <!-- Items will be dynamically populated here -->
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 onclick="toggleCategory(this)">Chestplate</h2>
+            <div class="items-grid">
+                <!-- Items will be dynamically populated here -->
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 onclick="toggleCategory(this)">Leggings</h2>
+            <div class="items-grid">
+                <!-- Items will be dynamically populated here -->
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 onclick="toggleCategory(this)">Boots</h2>
+            <div class="items-grid">
+                <!-- Items will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Remove hardcoded summary updates - this will be handled by items.js
+        document.getElementById('total-items').textContent = 'Loading...';
+        document.getElementById('helmet-count').textContent = 'Loading...';
+        document.getElementById('helmet-tradeable').textContent = 'Loading...';
+        document.getElementById('helmet-max-xp').textContent = 'Loading...';
+        document.getElementById('chestplate-count').textContent = 'Loading...';
+        document.getElementById('chestplate-tradeable').textContent = 'Loading...';
+        document.getElementById('chestplate-max-xp').textContent = 'Loading...';
+        document.getElementById('leggings-count').textContent = 'Loading...';
+        document.getElementById('leggings-tradeable').textContent = 'Loading...';
+        document.getElementById('leggings-max-xp').textContent = 'Loading...';
+        document.getElementById('boots-count').textContent = 'Loading...';
+        document.getElementById('boots-tradeable').textContent = 'Loading...';
+        document.getElementById('boots-max-xp').textContent = 'Loading...';
+        
+        // Remove hardcoded timestamp - this will be handled by items.js
+        document.getElementById('timestamp').textContent = 'Loading...';
+    </script>
+    <script src="js/items.js"></script>
+</body>
+</html> 
