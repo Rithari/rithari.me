@@ -398,7 +398,9 @@ async function fetchItems() {
         console.log('Fetching items from API...');
         const response = await fetch('https://api.leolucadatri.io/api/items', {
             method: 'GET',
+            mode: 'cors',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         });
