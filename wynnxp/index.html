@@ -2,13 +2,25 @@
 <html>
 <head>
     <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('https://cdn.jsdelivr.net/gh/goldstargloww/minecraft-css@master/fonts/minecraft-regular.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/gh/goldstargloww/minecraft-css@master/fonts/minecraft-regular.woff') format('woff'),
+                 url('https://cdn.jsdelivr.net/gh/goldstargloww/minecraft-css@master/fonts/minecraft-regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
         body {
             background-color: #1e1e1e; 
             color: #ffffff; 
-            font-family: 'Courier New', monospace;
+            font-family: 'Minecraft', monospace;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: unset;
         }
         .header {
             text-align: center;
@@ -23,7 +35,7 @@
             font-style: italic;
         }
         .timestamp {
-            color: #888;
+            color: #55FFFF;
             text-align: right;
             margin-bottom: 20px;
             font-size: 0.9em;
@@ -79,7 +91,7 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
+            font-family: 'Minecraft', 'Courier New', monospace;
             font-size: 0.9em;
             transition: all 0.2s ease;
             margin-left: 10px;
@@ -316,7 +328,7 @@
 
         function toggleCategory(element) {
             const category = element.closest('.category');
-            category.classList.toggle('collapsed');
+            toggleCollapse(category);
         }
         
         function toggleItem(elementId) {
@@ -348,7 +360,7 @@
             <p>This is a curated list of Wynncraft items that provide XP bonuses. The list is designed to help you find the best items for leveling:</p>
             <ul>
                 <li>By default, only the <strong>most competitive</strong> items are shown - items that provide less XP than a lower-level alternative are hidden (except for ingredients).</li>
-                <li>Use the "Show All Items" toggle to display all items, including less competitive ones.</li>
+                <li>Use the "Show hiden items" toggle to display all items, including less competitive ones.</li>
                 <li>All items are organized by category (helmet, weapon, etc.) and sorted by level requirement.</li>
                 <li>Items marked in <span style="color: #55FF55">green</span> are tradeable, while items in <span style="color: #FF5555">red</span> cannot be traded. For non-tradeable items, their source location is shown.</li>
             </ul>
@@ -369,39 +381,38 @@
     <div class="efficiency-toggle">
         <label>
             <input type="checkbox" id="toggleCompetitive" onchange="toggleCompetitiveFilter()">
-            <span>Show all items, including less efficient ones</span>
+            <span>Show hidden items</span>
         </label>
         <div class="description">
-            By default, only items that provide the best XP bonus for their level are shown. 
             Enable this to see all items, including those that may be less efficient for leveling.
         </div>
     </div>
 
     <div id="items">
         <div class="category">
-            <h2 onclick="toggleCategory(this)">Helmet</h2>
-            <div class="items-grid">
+            <h2 class="collapsible" onclick="toggleCollapse(this.parentElement)">Helmet</h2>
+            <div class="items-grid collapsible-content">
                 <!-- Items will be dynamically populated here -->
             </div>
         </div>
 
         <div class="category">
-            <h2 onclick="toggleCategory(this)">Chestplate</h2>
-            <div class="items-grid">
+            <h2 class="collapsible" onclick="toggleCollapse(this.parentElement)">Chestplate</h2>
+            <div class="items-grid collapsible-content">
                 <!-- Items will be dynamically populated here -->
             </div>
         </div>
 
         <div class="category">
-            <h2 onclick="toggleCategory(this)">Leggings</h2>
-            <div class="items-grid">
+            <h2 class="collapsible" onclick="toggleCollapse(this.parentElement)">Leggings</h2>
+            <div class="items-grid collapsible-content">
                 <!-- Items will be dynamically populated here -->
             </div>
         </div>
 
         <div class="category">
-            <h2 onclick="toggleCategory(this)">Boots</h2>
-            <div class="items-grid">
+            <h2 class="collapsible" onclick="toggleCollapse(this.parentElement)">Boots</h2>
+            <div class="items-grid collapsible-content">
                 <!-- Items will be dynamically populated here -->
             </div>
         </div>
@@ -426,6 +437,7 @@
     </script>
     <script src="js/items.js"></script>
     <script>
+        // Start fetching items after all scripts are loaded
         document.addEventListener('DOMContentLoaded', () => {
             fetchItems();
         });
