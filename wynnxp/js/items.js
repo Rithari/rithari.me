@@ -76,29 +76,43 @@ function getCategoryDisplayName(category) {
            category.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
 }
 
-function filterEfficientItems(items) {
+function filterEfficientItems(items, category) {
+    // Don't filter ingredients
+    if (category.toLowerCase() === 'ingredient') {
+        return items.map(item => ({ ...item, isCompetitive: true }));
+    }
+
     // Keep track of the highest XP bonus seen at each level and below
     let maxXPByLevel = [];
-    return items.filter(item => {
+    
+    // First pass: find maximum XP values
+    items.forEach(item => {
+        const level = item.level;
+        const xpBonus = item.xpBonus;
+        const maxPossibleXP = xpBonus.max || xpBonus.raw || 0;
+        const guaranteedXP = xpBonus.min || xpBonus.raw || 0;
+        
+        if (!maxXPByLevel[level] || guaranteedXP > maxXPByLevel[level]) {
+            maxXPByLevel[level] = guaranteedXP;
+        }
+    });
+
+    // Second pass: mark items as competitive or not
+    return items.map(item => {
         const level = item.level;
         const xpBonus = item.xpBonus;
         const maxPossibleXP = xpBonus.max || xpBonus.raw || 0;
         
-        // If we've seen a lower or equal level item that always gives more XP, skip this item
+        // Check if there's a lower or equal level item that always gives more XP
+        let isCompetitive = true;
         for (let i = 0; i <= level; i++) {
             if (maxXPByLevel[i] && maxXPByLevel[i] > maxPossibleXP) {
-                return false;
+                isCompetitive = false;
+                break;
             }
         }
         
-        // Update the maximum XP bonus for this level
-        // We use the minimum XP bonus here because we want to be conservative
-        // Only update if this item is guaranteed to give more XP than what we've seen
-        const guaranteedXP = xpBonus.min || xpBonus.raw || 0;
-        if (!maxXPByLevel[level] || guaranteedXP > maxXPByLevel[level]) {
-            maxXPByLevel[level] = guaranteedXP;
-        }
-        return true;
+        return { ...item, isCompetitive };
     });
 }
 
@@ -154,10 +168,11 @@ function updateUI(categories) {
                     ${items.map(item => {
                         const itemId = `${categoryId}-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
                         return `
-                        <div class="item" id="${itemId}" onclick="toggleItem('${itemId}')">
+                        <div class="item ${!item.isCompetitive ? 'non-competitive' : ''}" id="${itemId}" onclick="toggleItem('${itemId}')">
                             <div class="item-header">
                                 <span>
                                     <span style="color: ${getTierColor(item.tier)}">${item.name}</span> : ${item.tier}
+                                    ${!item.isCompetitive ? '<span class="efficiency-warning">[May be less efficient]</span>' : ''}
                                 </span>
                                 <div class="item-info">
                                     <span class="level">Level ${item.level}</span>, 
@@ -265,7 +280,12 @@ function updateUI(categories) {
         });
 }
 
+function toggleCollapse(element) {
+    element.classList.toggle('collapsed');
+}
+
 function updateTimestamp() {
+    const timestampContainer = document.querySelector('.timestamp');
     const timestamp = document.getElementById('timestamp');
     const cachedData = localStorage.getItem('itemsData');
     
@@ -285,7 +305,7 @@ function updateTimestamp() {
             
             if (diff <= 0) {
                 clearInterval(intervalId);
-                timestamp.innerHTML = 'Cache expired. Refreshing...';
+                timestampContainer.classList.remove('visible');
                 fetchItems();
                 return;
             }
@@ -296,9 +316,12 @@ function updateTimestamp() {
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
             timestamp.innerHTML = `Next Refresh in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            timestampContainer.classList.add('visible');
         }, 1000);
         
         timestamp.dataset.intervalId = intervalId;
+    } else {
+        timestampContainer.classList.remove('visible');
     }
 }
 
@@ -383,7 +406,7 @@ function processItems(items) {
         items.sort((a, b) => a.level - b.level);
         
         // Then filter out less efficient items
-        const filteredItems = filterEfficientItems(items);
+        const filteredItems = filterEfficientItems(items, category);
         items.length = 0;
         items.push(...filteredItems);
     });
@@ -458,8 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function toggleCategory(categoryId) {
-    const itemsGrid = document.getElementById(`items-${categoryId}`);
-    if (itemsGrid) {
-        itemsGrid.style.display = itemsGrid.style.display === 'none' ? 'grid' : 'none';
+    const category = document.getElementById(`category-${categoryId}`);
+    if (category) {
+        category.classList.toggle('collapsed');
     }
 } 

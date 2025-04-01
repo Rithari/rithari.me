@@ -27,6 +27,10 @@
             text-align: right;
             margin-bottom: 20px;
             font-size: 0.9em;
+            display: none;
+        }
+        .timestamp.visible {
+            display: block;
         }
         .info-box {
             background-color: #2d2d2d;
@@ -122,7 +126,7 @@
             content: '▼';
             display: inline-block;
             margin-right: 10px;
-            transition: transform 0.2s;
+            transition: transform 0.3s;
         }
         .category.collapsed h2::before {
             transform: rotate(-90deg);
@@ -238,6 +242,47 @@
         .xp-bonus {
             color: #FFFF55;
         }
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsible::before {
+            content: '▼';
+            display: inline-block;
+            margin-right: 10px;
+            transition: transform 0.3s;
+        }
+        .collapsed .collapsible::before {
+            transform: rotate(-90deg);
+        }
+        .collapsed .collapsible-content {
+            display: none;
+        }
+        .info-box h3, .summary h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+        .item.non-competitive {
+            display: none;
+        }
+        .show-all .item.non-competitive {
+            display: flex;
+        }
+        .efficiency-warning {
+            color: #FF5555;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        .button-container {
+            text-align: right;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
     </style>
     <script>
         function toggleCategory(element) {
@@ -250,6 +295,13 @@
             const details = element.querySelector('.item-details');
             details.classList.toggle('expanded');
         }
+
+        function toggleCompetitiveFilter() {
+            const button = document.getElementById('toggleCompetitive');
+            const itemsContainer = document.getElementById('items');
+            const isShowingAll = itemsContainer.classList.toggle('show-all');
+            button.textContent = isShowingAll ? 'Show Competitive Only' : 'Show All Items';
+        }
     </script>
 </head>
 <body>
@@ -258,22 +310,32 @@
         <div class="subtitle">Created by Rithari</div>
     </div>
     
+    <div class="button-container">
+        <button id="toggleCompetitive" class="theme-button" onclick="toggleCompetitiveFilter()">
+            Show All Items
+        </button>
+    </div>
+    
     <div class="timestamp">
-        Last Fetched: <span id="timestamp"></span>
+        <span id="timestamp"></span>
     </div>
     
     <div class="info-box">
-        <h3>⚠️ Important Information</h3>
-        <p>This is a curated list of Wynncraft items that provide XP bonuses. The list is designed to help you find the best items for leveling:</p>
-        <ul>
-            <li>Only the <strong>most efficient</strong> items are shown - if a higher-level item gives less XP than a lower-level one in the same category, it's not included.</li>
-            <li>All items are organized by category (helmet, weapon, etc.) and sorted by level requirement.</li>
-            <li>Items marked in <span style="color: #55FF55">green</span> are tradeable, while items in <span style="color: #FF5555">red</span> cannot be traded. For non-tradeable items, their source location is shown.</li>        </ul>
+        <h3 class="collapsible" onclick="toggleCollapse(this.parentElement)">⚠️ Important Information</h3>
+        <div class="collapsible-content">
+            <p>This is a curated list of Wynncraft items that provide XP bonuses. The list is designed to help you find the best items for leveling:</p>
+            <ul>
+                <li>By default, only the <strong>most competitive</strong> items are shown - items that provide less XP than a lower-level alternative are hidden (except for ingredients).</li>
+                <li>Use the "Show All Items" toggle to display all items, including less competitive ones.</li>
+                <li>All items are organized by category (helmet, weapon, etc.) and sorted by level requirement.</li>
+                <li>Items marked in <span style="color: #55FF55">green</span> are tradeable, while items in <span style="color: #FF5555">red</span> cannot be traded. For non-tradeable items, their source location is shown.</li>
+            </ul>
+        </div>
     </div>
     
     <div class="summary">
-        <h2>Summary</h2>
-        <div class="summary-grid">
+        <h2 class="collapsible" onclick="toggleCollapse(this.parentElement)">Summary</h2>
+        <div class="summary-grid collapsible-content">
             <div class="summary-item"><strong>Total Items:</strong> <span id="total-items">Loading...</span></div>
             <div class="summary-item"><strong>Helmet</strong><br>Items: <span id="helmet-count">Loading...</span><br>Tradeable: <span id="helmet-tradeable">Loading...</span><br>Max XP: <span id="helmet-max-xp">Loading...</span></div>
             <div class="summary-item"><strong>Chestplate</strong><br>Items: <span id="chestplate-count">Loading...</span><br>Tradeable: <span id="chestplate-tradeable">Loading...</span><br>Max XP: <span id="chestplate-max-xp">Loading...</span></div>
