@@ -388,7 +388,7 @@ function processItems(items) {
             xpBonus: typeof item.identifications.xpBonus === 'object' 
                 ? item.identifications.xpBonus 
                 : { min: item.identifications.xpBonus, max: item.identifications.xpBonus, raw: item.identifications.xpBonus },
-            restrictions: item.restrictions || [],
+            restrictions: item.restrictions || 'tradable',
             identifications: item.identifications,
             requirements: item.requirements || {},
             base: item.base,
@@ -398,14 +398,15 @@ function processItems(items) {
         });
     });
 
-    // Sort items in each category by level only
-    Object.entries(categories).forEach(([categoryName, items]) => {
-        items.sort((a, b) => a.level - b.level);
+    // Sort items in each category by level and filter less efficient ones
+    Object.entries(categories).forEach(([categoryName, categoryItems]) => {
+        // Sort by level
+        categoryItems.sort((a, b) => a.level - b.level);
         
-        // Then filter out less efficient items
-        const filteredItems = filterEfficientItems(items, categoryName);
-        items.length = 0;
-        items.push(...filteredItems);
+        // Filter out less efficient items
+        const filteredItems = filterEfficientItems(categoryItems, categoryName);
+        categoryItems.length = 0;
+        categoryItems.push(...filteredItems);
     });
 
     return categories;
@@ -482,4 +483,4 @@ function toggleCategory(categoryId) {
     if (category) {
         category.classList.toggle('collapsed');
     }
-} 
+}
