@@ -399,11 +399,11 @@ function processItems(items) {
     });
 
     // Sort items in each category by level only
-    Object.values(categories).forEach(items => {
+    Object.entries(categories).forEach(([categoryName, items]) => {
         items.sort((a, b) => a.level - b.level);
         
         // Then filter out less efficient items
-        const filteredItems = filterEfficientItems(items, category);
+        const filteredItems = filterEfficientItems(items, categoryName);
         items.length = 0;
         items.push(...filteredItems);
     });
