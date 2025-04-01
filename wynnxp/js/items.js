@@ -287,42 +287,39 @@ function toggleCollapse(element) {
 function updateTimestamp() {
     const timestampContainer = document.querySelector('.timestamp');
     const timestamp = document.getElementById('timestamp');
-    const cachedData = localStorage.getItem('itemsData');
     
-    if (cachedData) {
-        const { timestamp: lastUpdate } = JSON.parse(cachedData);
-        const nextUpdate = new Date(lastUpdate + 24 * 60 * 60 * 1000);
+    // Clear any existing countdown
+    if (timestamp.dataset.intervalId) {
+        clearInterval(parseInt(timestamp.dataset.intervalId));
+    }
+    
+    // Get the last update time from localStorage or use current time
+    const lastUpdate = localStorage.getItem('lastUpdate') 
+        ? parseInt(localStorage.getItem('lastUpdate'))
+        : Date.now();
+    
+    const nextUpdate = new Date(lastUpdate + 24 * 60 * 60 * 1000);
+    
+    // Update countdown every second
+    const intervalId = setInterval(() => {
+        const now = new Date();
+        const diff = nextUpdate - now;
         
-        // Clear any existing countdown
-        if (timestamp.dataset.intervalId) {
-            clearInterval(parseInt(timestamp.dataset.intervalId));
+        if (diff <= 0) {
+            clearInterval(intervalId);
+            fetchItems();
+            return;
         }
         
-        // Update countdown every second
-        const intervalId = setInterval(() => {
-            const now = new Date();
-            const diff = nextUpdate - now;
-            
-            if (diff <= 0) {
-                clearInterval(intervalId);
-                timestampContainer.classList.remove('visible');
-                fetchItems();
-                return;
-            }
-            
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            timestamp.innerHTML = `Next Refresh in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
-            timestampContainer.classList.add('visible');
-        }, 1000);
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
-        timestamp.dataset.intervalId = intervalId;
-    } else {
-        timestampContainer.classList.remove('visible');
-    }
+        timestamp.textContent = `Next refresh in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+    
+    timestamp.dataset.intervalId = intervalId;
 }
 
 function updateSummary(categories) {
