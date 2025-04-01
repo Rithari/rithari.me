@@ -155,20 +155,22 @@ function updateUI(categories) {
                         const itemId = `${categoryId}-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
                         return `
                         <div class="item" id="${itemId}" onclick="toggleItem('${itemId}')">
-                            <span>
-                                <span style="color: ${getTierColor(item.tier)}">${item.name}</span> : ${item.tier}
-                            </span>
-                            <div class="item-info">
-                                <span class="level">Level ${item.level}</span>, 
-                                <span class="xp-bonus">XP Bonus: ${
-                                    item.xpBonus.min === item.xpBonus.max 
-                                        ? `${item.xpBonus.min}%`
-                                        : `${item.xpBonus.min}-${item.xpBonus.max}%`
-                                }</span>
+                            <div class="item-header">
+                                <span>
+                                    <span style="color: ${getTierColor(item.tier)}">${item.name}</span> : ${item.tier}
+                                </span>
+                                <div class="item-info">
+                                    <span class="level">Level ${item.level}</span>, 
+                                    <span class="xp-bonus">XP Bonus: ${
+                                        item.xpBonus.min === item.xpBonus.max 
+                                            ? `${item.xpBonus.min}%`
+                                            : `${item.xpBonus.min}-${item.xpBonus.max}%`
+                                    }</span>
+                                </div>
+                                <span class="${item.restrictions === 'untradable' ? 'not-tradeable' : 'tradeable'}">
+                                    [${item.restrictions === 'untradable' ? 'Untradable' : 'Tradable'}] 
+                                </span>
                             </div>
-                            <span class="${item.restrictions === 'untradable' ? 'not-tradeable' : 'tradeable'}">
-                                [${item.restrictions === 'untradable' ? 'Untradable' : 'Tradable'}] 
-                            </span>
                             <div class="item-details">
                                 ${item.requirements && Object.keys(item.requirements).length > 0 ? `
                                     <div class="stat-section">
@@ -288,15 +290,12 @@ function updateTimestamp() {
                 return;
             }
             
-            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
-            timestamp.innerHTML = `
-                Last fetched: ${new Date(lastUpdate).toLocaleString()}<br>
-                Next update: ${nextUpdate.toLocaleString()}<br>
-                <span style="color: #55FFFF">Time until next update: ${hours}h ${minutes}m ${seconds}s</span>
-            `;
+            timestamp.innerHTML = `Next Refresh in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
         }, 1000);
         
         timestamp.dataset.intervalId = intervalId;
@@ -456,4 +455,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         fetchItems();
     }
-}); 
+});
+
+function toggleCategory(categoryId) {
+    const itemsGrid = document.getElementById(`items-${categoryId}`);
+    if (itemsGrid) {
+        itemsGrid.style.display = itemsGrid.style.display === 'none' ? 'grid' : 'none';
+    }
+} 

@@ -148,17 +148,13 @@
             flex-direction: column;
             gap: 5px;
         }
-        .item:hover {
+        .item-header {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .item-header:hover {
             background-color: #363636;
-        }
-        .item > *:first-child {
-            white-space: nowrap;
-            display: block;
-            margin-bottom: 3px;
-        }
-        .item-info {
-            display: block;
-            margin-bottom: 3px;
         }
         .item-details {
             display: none;
@@ -169,6 +165,15 @@
         }
         .item-details.expanded {
             display: block;
+        }
+        .item > *:first-child {
+            white-space: nowrap;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .item-info {
+            display: block;
+            margin-bottom: 3px;
         }
         .stat-section {
             margin-bottom: 15px;
@@ -308,7 +313,6 @@
     </div>
 
     <script>
-        // Remove hardcoded summary updates - this will be handled by items.js
         document.getElementById('total-items').textContent = 'Loading...';
         document.getElementById('helmet-count').textContent = 'Loading...';
         document.getElementById('helmet-tradeable').textContent = 'Loading...';
@@ -323,7 +327,6 @@
         document.getElementById('boots-tradeable').textContent = 'Loading...';
         document.getElementById('boots-max-xp').textContent = 'Loading...';
         
-        // Remove hardcoded timestamp - this will be handled by items.js
         document.getElementById('timestamp').textContent = 'Loading...';
     </script>
     <script src="js/items.js"></script>
