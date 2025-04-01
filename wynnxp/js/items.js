@@ -172,7 +172,6 @@ function updateUI(categories) {
                             <div class="item-header">
                                 <span>
                                     <span style="color: ${getTierColor(item.tier)}">${item.name}</span> : ${item.tier}
-                                    ${!item.isCompetitive ? '<span class="efficiency-warning">[May be less efficient]</span>' : ''}
                                 </span>
                                 <div class="item-info">
                                     <span class="level">Level ${item.level}</span>, 
@@ -185,6 +184,7 @@ function updateUI(categories) {
                                 <span class="${item.restrictions === 'untradable' ? 'not-tradeable' : 'tradeable'}">
                                     [${item.restrictions === 'untradable' ? 'Untradable' : 'Tradable'}] 
                                 </span>
+                                ${!item.isCompetitive ? '<div class="efficiency-warning">[May be less efficient]</div>' : ''}
                             </div>
                             <div class="item-details">
                                 ${item.requirements && Object.keys(item.requirements).length > 0 ? `
@@ -483,4 +483,4 @@ function toggleCategory(categoryId) {
     if (category) {
         category.classList.toggle('collapsed');
     }
-}
+} 
